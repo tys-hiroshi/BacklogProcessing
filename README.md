@@ -1,2 +1,7 @@
-# backlogprocessing
-processing work time on backlog.
+process working time on backlog.
+
+Requirements
+
+- Python 3.7+
+- pybacklog
+
