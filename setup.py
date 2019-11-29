@@ -17,16 +17,13 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 requires = [
-        'azure-functions==1.0.5',
         'certifi==2018.10.15',
         'chardet==3.0.4',
         'python-dateutil==2.8.1',
         'idna==2.7',
         'jmespath==0.9.3',
-        'pip==19.0.3',
         'pybacklog==0.1.7',
         'pytz==2018.7',
-        'requests==2.20.1',
         'ruamel.appconfig==0.5.4',
         'ruamel.std.argparse==0.8.1',
         'urllib3==1.24.2',
@@ -36,7 +33,7 @@ requires = [
 
 setup(
     name='backlogprocessing',
-    version='0.0.1',
+    version='0.0.2',
     description=description,
     long_description=long_description,
     long_description_content_type='text/markdown',
