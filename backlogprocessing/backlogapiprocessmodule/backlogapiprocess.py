@@ -32,7 +32,14 @@ def run(configFile = 'config.yml', logConfigFile = 'logging_debug.conf'):
     config = Config(configFile).content
     logger = Logger(logConfigFile)
 
-    days = [datetime.today()]
+    processingDateTimeStr = config['PROCESSING_DATETIME']
+    print('-----------------------------------------')
+    logger.info(f'processingDateTimeStr: {processingDateTimeStr}')
+    days = []
+    if processingDateTimeStr == '':
+        days.append(datetime.today())
+    else:
+        days.append(datetime.strptime(processingDateTimeStr, '%Y-%m-%d %H:%M:%S'))
 
     for day in days:
         doProcessing(day, config, logger)
