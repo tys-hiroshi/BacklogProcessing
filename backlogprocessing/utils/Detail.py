@@ -116,7 +116,9 @@ class Detail(WikiBase):
                         if record[0] == amountLabel:
                             # 既に存在している合計のrecordをskip
                             continue
-                        content += f'|{record[0]}|{record[1]}|{WikiBase.WikiLineSep}'
+                        # if record[1] == '0.0' , don't add.
+                        if float(record[1]) > 0:
+                            content += f'|{record[0]}|{record[1]}|{WikiBase.WikiLineSep}'
                         amount += float(record[1])
                     content += f'|{amountLabel}|{amount}|{WikiBase.WikiLineSep}'
             content += f'{self.Separator}{WikiBase.WikiLineSep}'
