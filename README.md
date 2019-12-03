@@ -5,3 +5,10 @@ processing working time on backlog.
 - Python 3.7+
 - pybacklog
 
+## Usage
+
+```
+from backlogprocessingmodule import *
+
+backlogapiprocessing.run(ConfigFilePath, LoggingConfigFilePath)
+```

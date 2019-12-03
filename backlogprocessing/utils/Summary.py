@@ -8,7 +8,7 @@ from utils.WikiBase import WikiBase
 
 |プロジェクト名|プロジェクトキー|
 |:--|:--|
-|実績期間合計| |
+|実績時間合計| |
 ==========ここから上はコメントを書かないでください==========
 
 - 表
@@ -26,7 +26,7 @@ class Summary(WikiBase):
     ProjectKeyLabel = u'プロジェクトキー'
     ProjectNameLine = ':--'
     ProjectKeyLine = ':--'
-    AmountLabel = u'実績期間合計'
+    AmountLabel = u'実績時間合計'
 
     def __init__(self, wikiId, client):
         super().__init__(wikiId, client)
