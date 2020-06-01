@@ -24,19 +24,23 @@ class Issue(object):
             params['count'] = maxComments
         issueComments = self.client.issue_comments(self.issueKey, params)
 
-        #新規課題追加時のみ工数を入れた場合に工数をカウントできるようにする
-        if len(issueComments) == 0:
-            issue = self.client.issue(self.issueKey)
-            issue_actualHours = 0 if issue["actualHours"] == None else issue["actualHours"]
+        issue = self.client.issue(self.issueKey)
+        created = utils.Utils.utc(issue['created'])
+        created = datetime.strptime(created, '%Y-%m-%dT%H:%M:%S%z')
+        created += timedelta(hours=9) # JSTに変換する
+
+        #集計期間かつ新規課題追加時のみ(コメントなし)工数を入れた場合に工数をカウントできるようにする
+        if len(issueComments) == 0 and self.beginDate <= created and created <= self.endDate:  #within the period:
+            issue_actualHours = 0.0 if issue["actualHours"] == None else float(issue["actualHours"])
             return self.issueKey, issue_actualHours
-        ## TODO: 新規課題追加時とコメントで実績工数入力時にカウントできていない
+
         actualHours = 0.0
         for issueComment in issueComments:
             updated = utils.Utils.utc(issueComment['updated'])
             updated = datetime.strptime(updated, '%Y-%m-%dT%H:%M:%S%z')
             updated += timedelta(hours=9) # JSTに変換する
             self.logger.debug(f'updated: {updated}')
-            if updated < self.beginDate or self.endDate < updated:
+            if updated < self.beginDate or self.endDate < updated:  #out of term
                 continue
 
             changeLog = issueComment['changeLog']
@@ -49,7 +53,12 @@ class Issue(object):
                 self.logger.debug(f'newValue = {newValue}, originalValue = {originalValue}')
                 newValue = 0.0 if newValue is None else float(newValue)
                 originalValue = 0.0 if originalValue is None or originalValue is '' else float(originalValue)
-                hours = newValue - originalValue
+                #NOTE: 新規課題追加時とコメントで実績工数入力時にカウントできていない
+                if self.beginDate <= created and created <= self.endDate:  #within the period
+                    hours = newValue
+                else:
+                    hours = newValue - originalValue
+
                 self.logger.debug(f'hours: {hours}')
                 actualHours += hours
 
