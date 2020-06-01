@@ -13,15 +13,23 @@ class Issue(object):
         self.endDate = datetime.strptime(f'{endDate}+0900', '%Y-%m-%d%z')
         self.endDate += timedelta(days=1)
 
+    # get Acutual hours in issue
     def getActualHours(self, maxComments):
         params = {
             'order': 'asc'
         }
+        
         # maxCommentsが負の値の場合は、'count' を明示的に指定しない
         if maxComments >= 0:
             params['count'] = maxComments
         issueComments = self.client.issue_comments(self.issueKey, params)
 
+        #新規課題追加時のみ工数を入れた場合に工数をカウントできるようにする
+        if len(issueComments) == 0:
+            issue = self.client.issue(self.issueKey)
+            issue_actualHours = 0 if issue["actualHours"] == None else issue["actualHours"]
+            return self.issueKey, issue_actualHours
+        ## TODO: 新規課題追加時とコメントで実績工数入力時にカウントできていない
         actualHours = 0.0
         for issueComment in issueComments:
             updated = utils.Utils.utc(issueComment['updated'])
