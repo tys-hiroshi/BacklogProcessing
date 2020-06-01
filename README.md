@@ -6,6 +6,7 @@ processing working time on backlog.
 
 - Python 3.7+
 - pybacklog
+- pip install python-dateutil
 
 ## Install package
 
