@@ -10,7 +10,7 @@ from io import open
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the README file
-with open(path.join(here, 'DESCRIPTION.md'), encoding='utf-8') as f:
+with open(path.join(here, 'DESCRIPTION.rst'), encoding='utf-8') as f:
     description = f.read()
 
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
@@ -33,7 +33,7 @@ requires = [
 
 setup(
     name='backlogprocessing',
-    version='0.0.8',
+    version='0.0.9',
     description=description,
     long_description=long_description,
     long_description_content_type='text/markdown',
