@@ -13,14 +13,14 @@ class Issue(object):
         self.endDate = datetime.strptime(f'{endDate}+0900', '%Y-%m-%d%z')
         self.endDate += timedelta(days=1)
 
-    def is_integer_or_float(n):
+    def is_integer_or_float(self, n):
         try:
             float(n)
             return True
         except ValueError:
             return False
 
-    def get_created_issue_actualHours(changeLogs):
+    def get_created_issue_actualHours(self, changeLogs):
         created_issue_actualHours = 0.0
         for logItem in changeLogs:
             if logItem['field'] != 'actualHours':
@@ -28,7 +28,8 @@ class Issue(object):
             self.logger.debug(f'logItem["originalValue"]: {logItem["originalValue"]}')
             first_originalValue_str = logItem["originalValue"]
             created_issue_actualHours = 0.0 if first_originalValue_str is None or first_originalValue_str is '' or not first_originalValue_str(first_originalValue_str) else float(first_originalValue_str)
-
+            break
+        return created_issue_actualHours
 
     # get Acutual hours in issue
     def getActualHours(self, maxComments):
@@ -63,7 +64,7 @@ class Issue(object):
 
             self.logger.debug(f'target_updated: {target_updated}')
             if len(changeLogs) > 0 and self.beginDate <= target_updated and target_updated <= self.endDate:  #within term:
-                created_issue_actualHours = get_created_issue_actualHours(changeLogs)
+                created_issue_actualHours = self.get_created_issue_actualHours(changeLogs)
         
         self.logger.debug(f'created_issue_actualHours: {created_issue_actualHours}')
         for issueComment in issueComments:
