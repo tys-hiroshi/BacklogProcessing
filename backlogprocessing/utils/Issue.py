@@ -13,6 +13,23 @@ class Issue(object):
         self.endDate = datetime.strptime(f'{endDate}+0900', '%Y-%m-%d%z')
         self.endDate += timedelta(days=1)
 
+    def is_integer_or_float(n):
+        try:
+            float(n)
+            return True
+        except ValueError:
+            return False
+
+    def get_created_issue_actualHours(changeLogs):
+        created_issue_actualHours = 0.0
+        for logItem in changeLogs:
+            if logItem['field'] != 'actualHours':
+                continue
+            self.logger.debug(f'logItem["originalValue"]: {logItem["originalValue"]}')
+            first_originalValue_str = logItem["originalValue"]
+            created_issue_actualHours = 0.0 if first_originalValue_str is None or first_originalValue_str is '' or not first_originalValue_str(first_originalValue_str) else float(first_originalValue_str)
+
+
     # get Acutual hours in issue
     def getActualHours(self, maxComments):
         params = {
@@ -39,16 +56,14 @@ class Issue(object):
         actualHours = 0.0
         # actual hours of created issue
         if len(issueComments) > 0:
-            changeLog = issueComments[0]['changeLog']
+            changeLogs = issueComments[0]['changeLog']
             target_updated = utils.Utils.utc(issueComments[0]['updated'])
             target_updated = datetime.strptime(target_updated, '%Y-%m-%dT%H:%M:%S%z')
             target_updated += timedelta(hours=9) # JSTに変換する
 
             self.logger.debug(f'target_updated: {target_updated}')
-            if len(changeLog) > 0 and self.beginDate <= target_updated and target_updated <= self.endDate:  #within term:
-                self.logger.debug(f'changeLog[0]["originalValue"]: {changeLog[0]["originalValue"]}')
-                first_originalValue_str = changeLog[0]["originalValue"]
-                created_issue_actualHours = 0.0 if first_originalValue_str is None or first_originalValue_str is '' or 'Open' in first_originalValue_str else float(first_originalValue_str)
+            if len(changeLogs) > 0 and self.beginDate <= target_updated and target_updated <= self.endDate:  #within term:
+                created_issue_actualHours = get_created_issue_actualHours(changeLogs)
         
         self.logger.debug(f'created_issue_actualHours: {created_issue_actualHours}')
         for issueComment in issueComments:
