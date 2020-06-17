@@ -19,7 +19,7 @@ class Issue(object):
             'order': 'asc'
         }
 
-        self.logger.debug(f'---- start getActualHours ----')
+        self.logger.debug(f'---- start getActualHours {self.issueKey} ----')
         
         # maxCommentsが負の値の場合は、'count' を明示的に指定しない
         if maxComments >= 0:
@@ -46,7 +46,9 @@ class Issue(object):
 
             self.logger.debug(f'target_updated: {target_updated}')
             if len(changeLog) > 0 and self.beginDate <= target_updated and target_updated <= self.endDate:  #within term:
-                created_issue_actualHours = 0.0 if changeLog[0]["originalValue"] is None or changeLog[0]["originalValue"] is '' else float(changeLog[0]["originalValue"])
+                self.logger.debug(f'changeLog[0]["originalValue"]: {changeLog[0]["originalValue"]}')
+                first_originalValue_str = changeLog[0]["originalValue"]
+                created_issue_actualHours = 0.0 if first_originalValue_str is None or first_originalValue_str is '' else float(first_originalValue_str)
         
         self.logger.debug(f'created_issue_actualHours: {created_issue_actualHours}')
         for issueComment in issueComments:
