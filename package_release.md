@@ -1,5 +1,13 @@
 # package release to pypi
 
+modify setup function in setup.py
+
+```
+version [new version]
+```
+
+upload command
+
 ```
 python -m venv .venv
 source .venv/bin/activate

@@ -27,7 +27,7 @@ class Issue(object):
                 continue
             self.logger.debug(f'logItem["originalValue"]: {logItem["originalValue"]}')
             first_originalValue_str = logItem["originalValue"]
-            created_issue_actualHours = 0.0 if first_originalValue_str is None or first_originalValue_str is '' or not is_integer_or_float(first_originalValue_str) else float(first_originalValue_str)
+            created_issue_actualHours = 0.0 if first_originalValue_str is None or first_originalValue_str is '' or not self.is_integer_or_float(first_originalValue_str) else float(first_originalValue_str)
             break
         return created_issue_actualHours
 
