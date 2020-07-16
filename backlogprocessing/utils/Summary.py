@@ -125,7 +125,11 @@ class Summary(WikiBase):
                 table += f'{column}|'
             table += f'{self.WikiLineSep}'
         content = table + self.Separator + self.bottomHalf
-        self.writeWikiPage(content, False)
+        
+        #if content is same, update wiki.
+        self.logger.debug(f"self.wikiPage['content']: {self.wikiPage['content']}")
+        if(self.wikiPage['content'] != content):
+            self.writeWikiPage(content, False)
 
 if __name__ == '__main__':
     pass
