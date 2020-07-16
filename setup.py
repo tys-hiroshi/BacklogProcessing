@@ -33,7 +33,7 @@ requires = [
 
 setup(
     name='backlogprocessing',
-    version='0.0.20',
+    version='0.0.21',
     description=description,
     long_description=long_description,
     long_description_content_type='text/markdown',

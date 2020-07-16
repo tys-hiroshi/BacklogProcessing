@@ -23,3 +23,8 @@ from backlogprocessingmodule import *
 
 backlogapiprocessing.run(ConfigFilePath, LoggingConfigFilePath)
 ```
+
+
+## For Develoiper
+
+When you need to upload this package, see package_release.md
