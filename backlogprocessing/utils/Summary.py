@@ -28,12 +28,13 @@ class Summary(WikiBase):
     ProjectKeyLine = ':--'
     AmountLabel = u'実績時間合計'
 
-    def __init__(self, wikiId, client):
+    def __init__(self, wikiId, client, logger):
         super().__init__(wikiId, client)
         content = self.wikiPage['content']
         content = content.split(self.Separator)
         self.bottomHalf = content[1] if len(content) > 1 else ''
         self.table = content[0].split(self.WikiLineSep)
+        self.logger = logger
         for i in range(len(self.table)):
             row = self.table[i]
             row = row.strip('|').split('|')

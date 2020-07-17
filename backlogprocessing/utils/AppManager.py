@@ -20,7 +20,7 @@ class AppManager(object):
             project.collectIssues(issueTypeName, beginDate, endDate, maxCount)
 
     def reportSummary(self, wikiId, period, maxComments):
-        summary = Summary(wikiId, self.client)
+        summary = Summary(wikiId, self.client, self.logger)
         record = {}
         for project in self.projects:
             rec = project.getSummaryRecord(maxComments)
