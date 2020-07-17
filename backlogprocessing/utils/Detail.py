@@ -54,10 +54,11 @@ class Section(object):
 class Detail(WikiBase):
     Separator = '***'
 
-    def __init__(self, wikiId, client):
+    def __init__(self, wikiId, client, logger):
         super().__init__(wikiId, client)
         wikiPage = client.wiki(wikiId)
         content = self.wikiPage['content']
+        self.logger = logger
         sections = content.split(self.Separator)
         self.sections = []
         for section in sections:
@@ -122,7 +123,11 @@ class Detail(WikiBase):
                         amount += float(record[1])
                     content += f'|{amountLabel}|{amount}|{WikiBase.WikiLineSep}'
             content += f'{self.Separator}{WikiBase.WikiLineSep}'
-        self.writeWikiPage(content, False)
+        
+        #if content is same, update wiki.
+        self.logger.debug(f"self.wikiPage['content']: {self.wikiPage['content']}")
+        if(self.wikiPage['content'] != content):
+            self.writeWikiPage(content, False)
 
 if __name__ == '__main__':
     pass

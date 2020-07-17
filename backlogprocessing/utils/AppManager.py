@@ -12,6 +12,7 @@ class AppManager(object):
     def __init__(self, config, logger):
         self.client = BacklogClient(config['WIKI_SPACE'], config['API_KEY']['GLOBAL'])
         self.projects = []
+        self.logger = logger
         for projectKey in config['PROCESSING_PROJECT_KEY']:
             self.projects.append(Project(projectKey, self.client, logger))
 
@@ -28,7 +29,7 @@ class AppManager(object):
         summary.addRecord(period, record).printRecords()
 
     def reportDetail(self, wikiId, period, maxComments):
-        detail = Detail(wikiId, self.client)
+        detail = Detail(wikiId, self.client, self.logger)
         projects = {}
         for project in self.projects:
             records = project.getDetailRecords(maxComments)
