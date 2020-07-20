@@ -2,6 +2,7 @@
 # -*- coding:utf-8 -*-
 
 from utils.Issue import Issue
+from datetime import datetime, timedelta
 
 class Project(object):
     ''' projectを抽象化するクラス
@@ -40,7 +41,8 @@ class Project(object):
         return issueTypeId
 
     # private
-    def getIssueKeys(self, issueTypeId, beginDate, endDate, operationType, maxCount):
+    def getIssueKeys(self, issueTypeId, beginDateStr, endDateStr, operationType, maxCount):
+        self.logger.info("---------------------operationType: {}---------------------".format(operationType))
         params = {
             'projectId[]': [self.project['id']],
             'issueTypeId[]': [issueTypeId],
@@ -50,14 +52,29 @@ class Project(object):
         # maxCountが負の値の場合は、'count' を明示的に指定しない
         if maxCount >= 0:
             params['count'] = maxCount
-        params[f'{operationType}Since'] = beginDate
-        params[f'{operationType}Until'] = endDate
-        issues = self.client.issues(params)
+        beginDate = datetime.strptime(beginDateStr, '%Y-%m-%d')   
+        endDate = datetime.strptime(endDateStr, '%Y-%m-%d')
 
-        issueKeys = []
-        for issue in issues:
-            issueKeys += [issue['issueKey']]
-
+        issueKeys = []    
+        for day in range(1, endDate.day + 1):  ##TODO: 
+            sinceDate = datetime(beginDate.year, beginDate.month, day)
+            # delta = timedelta(days=1)
+            # untilDate = sinceDate + delta
+            # if sinceDate.month != untilDate.month:
+            #     untilDate = sinceDate
+            if sinceDate.month != beginDate.month:
+                break
+            sinceDateStr = sinceDate.strftime('%Y-%m-%d')
+            params[f'{operationType}Since'] = sinceDateStr
+            params[f'{operationType}Until'] = sinceDateStr
+            issues = self.client.issues(params)
+            issues = self.client.issues(params)
+            if len(issues) == maxCount:
+                self.logger.info("------------- length: {}".format(maxCount))
+            for issue in issues:
+                self.logger.info("issueKey: {}; created: {}; updated: {};".format(issue['issueKey'], issue['created'], issue['updated']))
+                issueKeys += [issue['issueKey']]
+        issueKeys = sorted(set(issueKeys), key=issueKeys.index)  ## distinct
         return issueKeys
 
     def collectIssues(self, issueTypeName, beginDate, endDate, maxCount=-1):
