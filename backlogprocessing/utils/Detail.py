@@ -99,7 +99,7 @@ class Detail(WikiBase):
             section.projects.append(pj)
         self.sections.append(section)
 
-    def printSections(self):
+    def printSections(self, isUpdateWiki):
         amountLabel = u'合計'
         content = ''
         for section in self.sections:
@@ -125,8 +125,8 @@ class Detail(WikiBase):
             content += f'{self.Separator}{WikiBase.WikiLineSep}'
         
         #if content is same, update wiki.
-        self.logger.debug(f"self.wikiPage['content']: {self.wikiPage['content']}")
-        if(self.wikiPage['content'] != content):
+        self.logger.debug(f"self.wikiPage['content']: {self.wikiPage['content']}; content(new update): {content}")
+        if self.wikiPage['content'] != content and isUpdateWiki:
             self.writeWikiPage(content, False)
 
 if __name__ == '__main__':

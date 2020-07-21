@@ -6,6 +6,7 @@ from dateutil.relativedelta import relativedelta
 from utils.Config import Config
 from utils.Logger import Logger
 from utils.AppManager import AppManager
+from distutils.util import strtobool
 
 #print(sys.prefix)
 #print(sys.path)
@@ -26,8 +27,10 @@ def run(configFile = 'config.yml', logConfigFile = 'logging_debug.conf'):
         maxComments = 100 # backlog APIとしての上限が、現状はこの値らしい
         periodLabel = f'{beginDate} 〜 {endDate}'
         app.collectIssues(config['PROCESSING_ISSUE_TYPE_NAME'], beginDate, endDate, maxCount)
-        app.reportSummary(config['PROCESSING_UPDATE_WIKI']['SUMMARY_WIKI_ID'], periodLabel, maxComments)
-        app.reportDetail(config['PROCESSING_UPDATE_WIKI']['DETAIL_WIKI_ID'], periodLabel, maxComments)
+        isUpdateWiki = config['PROCESSING_UPDATE_WIKI']['IS_UPDATE']
+        #isUpdateWiki = strtobool(IS_UPDATE_Str if IS_UPDATE_Str != '' else "false")
+        app.reportSummary(config['PROCESSING_UPDATE_WIKI']['SUMMARY_WIKI_ID'], periodLabel, maxComments, isUpdateWiki)
+        app.reportDetail(config['PROCESSING_UPDATE_WIKI']['DETAIL_WIKI_ID'], periodLabel, maxComments, isUpdateWiki)
 
     config = Config(configFile).content
     logger = Logger(logConfigFile)
