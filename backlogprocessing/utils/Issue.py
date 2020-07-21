@@ -19,16 +19,25 @@ class Issue(object):
             return True
         except ValueError:
             return False
-
-    def get_created_issue_actualHours(self, changeLogs):
+    #TODO: 
+    # 1. create issue that inputed actual hours. 
+    # 2. change status
+    # then not collect actual hours
+    # FF_CONTACT_WPS_5-924
+    def get_created_issue_actualHours(self, changeLogs, issue, created):
         created_issue_actualHours = 0.0
+        cnt = 0
         for logItem in changeLogs:
             if logItem['field'] != 'actualHours':
+                cnt += 1 
                 continue
             self.logger.debug(f'logItem["originalValue"]: {logItem["originalValue"]}')
             first_originalValue_str = logItem["originalValue"]
             created_issue_actualHours = 0.0 if first_originalValue_str is None or first_originalValue_str is '' or not self.is_integer_or_float(first_originalValue_str) else float(first_originalValue_str)
             break
+        #NOTE: if it's not find field: actualhours, set issue["actualHours"]
+        if len(changeLogs) == cnt and self.beginDate <= created and created <= self.endDate:
+            created_issue_actualHours = 0.0 if issue["actualHours"] == None else float(issue["actualHours"])  #NOTE: issue's actualhours
         return created_issue_actualHours
 
     # get Acutual hours in issue
@@ -38,7 +47,8 @@ class Issue(object):
         }
 
         self.logger.debug(f'---- start getActualHours {self.issueKey} ----')
-        
+        if self.issueKey == "FF_ARRANGEAPP-147":
+            print('------------------')
         # maxCommentsが負の値の場合は、'count' を明示的に指定しない
         if maxComments >= 0:
             params['count'] = maxComments
@@ -64,7 +74,7 @@ class Issue(object):
 
             self.logger.debug(f'target_updated: {target_updated}')
             if len(changeLogs) > 0 and self.beginDate <= target_updated and target_updated <= self.endDate:  #within term:
-                created_issue_actualHours = self.get_created_issue_actualHours(changeLogs)
+                created_issue_actualHours = self.get_created_issue_actualHours(changeLogs, issue, created)
         
         self.logger.debug(f'created_issue_actualHours: {created_issue_actualHours}')
         for issueComment in issueComments:
