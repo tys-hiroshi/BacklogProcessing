@@ -2,6 +2,10 @@
 
 processing working time on backlog.
 
+Reference
+
+https://developer.nulab.com/ja/docs/backlog/
+
 ## Requirements
 
 - Python 3.7+
