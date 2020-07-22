@@ -66,6 +66,8 @@ class Issue(object):
 
         actualHours = 0.0
         # actual hours of created issue
+        # TODO: don't check changeLogs. maybe check all issueComments.
+        # if it have no actual hours, get created issue actual hours.
         if len(issueComments) > 0:
             changeLogs = issueComments[0]['changeLog']
             target_updated = utils.Utils.utc(issueComments[0]['updated'])
