@@ -54,7 +54,7 @@ class Issue(object):
 
         actualHours = 0.0
         is_add_actual_hours = False  ## when you update actual hours in comments, it's true
-        self.logger.debug(f'created_issue_actualHours: {created_issue_actualHours}')
+        self.logger.debug(f'len(issueComments): {len(issueComments)}')
         for issueComment in issueComments:
             updated = utils.Utils.utc(issueComment['updated'])
             updated = datetime.strptime(updated, '%Y-%m-%dT%H:%M:%S%z')

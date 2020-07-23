@@ -109,9 +109,11 @@ class Project(object):
 
         createdIssueKeys = self.getIssueKeys(issueTypeId, beginDate, endDate, 'created', maxCount)
         updatedIssueKeys = self.getIssueKeys(issueTypeId, beginDate, endDate, 'updated', maxCount)
+        self.logger.info(f'----------------------- len(createdIssueKeys): {len(createdIssueKeys)}, len(updatedIssueKeys): {len(updatedIssueKeys)}')
         issueKeys = createdIssueKeys + updatedIssueKeys
         issueKeys = list(set(issueKeys))
         issueKeys.sort()
+        self.logger.info(f'----------------------- len(issueKeys): {len(issueKeys)}')
 
         issues = []
         for issueKey in issueKeys:
