@@ -3,6 +3,7 @@
 
 from utils.Issue import Issue
 from datetime import datetime, timedelta
+import copy
 
 class Project(object):
     ''' projectを抽象化するクラス
@@ -56,7 +57,7 @@ class Project(object):
         endDate = datetime.strptime(endDateStr, '%Y-%m-%d')
 
         issueKeys = []    
-        for day in range(1, endDate.day + 1):  ##TODO: 
+        for day in range(1, endDate.day):  ##TODO: 
             sinceDate = datetime(beginDate.year, beginDate.month, day)
             # delta = timedelta(days=1)
             # untilDate = sinceDate + delta
@@ -68,15 +69,39 @@ class Project(object):
             params[f'{operationType}Since'] = sinceDateStr
             params[f'{operationType}Until'] = sinceDateStr
             issues = self.client.issues(params)
-            issues = self.client.issues(params)
+            self.logger.info(f"sinceDate: {sinceDate}; len(issues): {len(issues)}")
             if len(issues) == maxCount:
-                self.logger.info("------------- length: {}".format(maxCount))
-            for issue in issues:
-                self.logger.info("issueKey: {}; created: {}; updated: {};".format(issue['issueKey'], issue['created'], issue['updated']))
-                issueKeys += [issue['issueKey']]
+                self.logger.info(f"!!!!!WARNING!!!!! len(issues): {maxCount}; start get issues per statusId.")
+                statues = self.getProjectIssues(self.project['id'])
+                # add status condition
+                for status in statues:
+                    self.logger.info(f"!!!!!WARNING!!!!! status name: {status['name']}")
+                    tmpparams = copy.deepcopy(params)
+                    tmpparams['statusId[]'] = status["id"]
+                    issues = self.client.issues(tmpparams)
+                    self.logger.info(f"len(issues): {len(issues)};")
+                    if len(issues) == maxCount:
+                        self.logger.info(f"!!!!!ERROR!!!!! len(issues): {len(issues)}; should add conditions.")
+                    issueKeys = self.joinIssueKeys(issueKeys, issues)
+            else:
+                issueKeys = self.joinIssueKeys(issueKeys, issues)
+
         issueKeys = sorted(set(issueKeys), key=issueKeys.index)  ## distinct
+        ## NOTE: for debug
+        # issueKeysOrderbyKey = sorted(issueKeys)
+        # for issueKey in issueKeysOrderbyKey:
+        #     self.logger.info(f"issueKey: {issueKey}")
+        return issueKeys
+    
+    def joinIssueKeys(self, issueKeys, issues):
+        for issue in issues:
+            self.logger.info("issueKey: {}; created: {}; updated: {};".format(issue['issueKey'], issue['created'], issue['updated']))
+            issueKeys += [issue['issueKey']]
         return issueKeys
 
+    def getProjectIssues(self, projectId):
+        return self.client.project_statuses(projectId)
+    
     def collectIssues(self, issueTypeName, beginDate, endDate, maxCount=-1):
         issueTypeId = self.getIssueTypeId(issueTypeName)
         if not issueTypeId: # 指定されたissue typeがこのprojectに存在しない
@@ -84,9 +109,11 @@ class Project(object):
 
         createdIssueKeys = self.getIssueKeys(issueTypeId, beginDate, endDate, 'created', maxCount)
         updatedIssueKeys = self.getIssueKeys(issueTypeId, beginDate, endDate, 'updated', maxCount)
+        self.logger.info(f'----------------------- len(createdIssueKeys): {len(createdIssueKeys)}, len(updatedIssueKeys): {len(updatedIssueKeys)}')
         issueKeys = createdIssueKeys + updatedIssueKeys
         issueKeys = list(set(issueKeys))
         issueKeys.sort()
+        self.logger.info(f'----------------------- len(issueKeys): {len(issueKeys)}')
 
         issues = []
         for issueKey in issueKeys:

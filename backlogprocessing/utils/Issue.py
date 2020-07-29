@@ -19,16 +19,13 @@ class Issue(object):
             return True
         except ValueError:
             return False
-
-    def get_created_issue_actualHours(self, changeLogs):
-        created_issue_actualHours = 0.0
-        for logItem in changeLogs:
-            if logItem['field'] != 'actualHours':
-                continue
-            self.logger.debug(f'logItem["originalValue"]: {logItem["originalValue"]}')
-            first_originalValue_str = logItem["originalValue"]
-            created_issue_actualHours = 0.0 if first_originalValue_str is None or first_originalValue_str is '' or not self.is_integer_or_float(first_originalValue_str) else float(first_originalValue_str)
-            break
+    #TODO: 
+    # 1. create issue that inputed actual hours. 
+    # 2. change status
+    # then not collect actual hours
+    # FF_CONTACT_WPS_5-924
+    def get_created_issue_actualHours(self, issue):
+        created_issue_actualHours = 0.0 if issue["actualHours"] == None else float(issue["actualHours"])  #NOTE: issue's actualhours
         return created_issue_actualHours
 
     # get Acutual hours in issue
@@ -38,7 +35,8 @@ class Issue(object):
         }
 
         self.logger.debug(f'---- start getActualHours {self.issueKey} ----')
-        
+        if self.issueKey == "FF_ARRANGEAPP-147":
+            print('------------------')
         # maxCommentsが負の値の場合は、'count' を明示的に指定しない
         if maxComments >= 0:
             params['count'] = maxComments
@@ -55,18 +53,8 @@ class Issue(object):
             return self.issueKey, issue_actualHours
 
         actualHours = 0.0
-        # actual hours of created issue
-        if len(issueComments) > 0:
-            changeLogs = issueComments[0]['changeLog']
-            target_updated = utils.Utils.utc(issueComments[0]['updated'])
-            target_updated = datetime.strptime(target_updated, '%Y-%m-%dT%H:%M:%S%z')
-            target_updated += timedelta(hours=9) # JSTに変換する
-
-            self.logger.debug(f'target_updated: {target_updated}')
-            if len(changeLogs) > 0 and self.beginDate <= target_updated and target_updated <= self.endDate:  #within term:
-                created_issue_actualHours = self.get_created_issue_actualHours(changeLogs)
-        
-        self.logger.debug(f'created_issue_actualHours: {created_issue_actualHours}')
+        is_add_actual_hours = False  ## when you update actual hours in comments, it's true
+        self.logger.debug(f'len(issueComments): {len(issueComments)}')
         for issueComment in issueComments:
             updated = utils.Utils.utc(issueComment['updated'])
             updated = datetime.strptime(updated, '%Y-%m-%dT%H:%M:%S%z')
@@ -90,6 +78,15 @@ class Issue(object):
 
                 self.logger.debug(f'hours: {hours}')
                 actualHours += hours
+                is_add_actual_hours = True
+
+
+        # NOTE: don't check changeLogs. maybe check all issueComments.
+        # NOTE: if it have no actual hours, get created issue actual hours.
+        ## add created issue actual hours in term
+        self.logger.debug(f'created: {created}')
+        if not is_add_actual_hours and self.beginDate <= created and created <= self.endDate:  #within term:
+            created_issue_actualHours = self.get_created_issue_actualHours(issue)
 
         actualHours += created_issue_actualHours
         return self.issueKey, actualHours

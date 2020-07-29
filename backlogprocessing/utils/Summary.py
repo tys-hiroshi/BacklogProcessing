@@ -118,7 +118,7 @@ class Summary(WikiBase):
         amount = sum([record[row][0] for row in record])
         self.table[-1].append(str(amount))
 
-    def printRecords(self):
+    def printRecords(self, isUpdateWiki):
         table = ''
         for row in self.table:
             table += '|'
@@ -128,8 +128,8 @@ class Summary(WikiBase):
         content = table + self.Separator + self.bottomHalf
         
         #if content is same, update wiki.
-        self.logger.debug(f"self.wikiPage['content']: {self.wikiPage['content']}")
-        if(self.wikiPage['content'] != content):
+        self.logger.info(f"self.wikiPage['content']: {self.wikiPage['content']}; content(new update): {content}")
+        if self.wikiPage['content'] != content and isUpdateWiki:
             self.writeWikiPage(content, False)
 
 if __name__ == '__main__':
