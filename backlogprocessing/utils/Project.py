@@ -72,7 +72,7 @@ class Project(object):
             self.logger.info(f"sinceDate: {sinceDate}; len(issues): {len(issues)}")
             if len(issues) == maxCount:
                 self.logger.info(f"!!!!!WARNING!!!!! len(issues): {maxCount}; start get issues per statusId.")
-                statues = self.getProjectIssues(self.project['id'])
+                statues = self.getProjectStatuses(self.project['id'])
                 # add status condition
                 for status in statues:
                     self.logger.info(f"!!!!!WARNING!!!!! status name: {status['name']}")
@@ -99,8 +99,12 @@ class Project(object):
             issueKeys += [issue['issueKey']]
         return issueKeys
 
-    def getProjectIssues(self, projectId):
-        return self.client.project_statuses(projectId)
+    def getProjectStatuses(self, projectId):
+        ## NOTE: 本当は pybacklog を使いたいが PullReuqestしたが Mergeされないので、自分でリクエストする
+        ## NOTE: 本当は これを使いたい。 return self.client.project_statuses(project_id_or_key)
+        #メソッド: GET 
+        #URL: /api/v2/projects/:projectIdOrKey/statusesreturn self.do
+        return self.client.do("GET", "projects/{project_id_or_key}/statuses", url_params={"project_id_or_key": projectId})
     
     def collectIssues(self, issueTypeName, beginDate, endDate, maxCount=-1):
         issueTypeId = self.getIssueTypeId(issueTypeName)
