@@ -74,7 +74,8 @@ class Issue(object):
                 newValue = 0.0 if newValue is None else float(newValue)
                 originalValue = 0.0 if originalValue is None or originalValue is '' else float(originalValue)
                 #NOTE: 新規課題追加時とコメントで実績工数入力時にカウントできていない
-                hours = newValue - originalValue
+                #NOTE: Actual Hours に1といれたあとで空に変更した場合、-1になってしまう問題を修正
+                hours = 0.0 if newValue - originalValue <= 0 else newValue - originalValue
 
                 self.logger.debug(f'hours: {hours}')
                 actualHours += hours
