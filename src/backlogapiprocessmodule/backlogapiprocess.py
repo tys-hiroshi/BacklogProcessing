@@ -3,9 +3,9 @@
 
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
-from utils.Config import Config
-from utils.Logger import Logger
-from utils.AppManager import AppManager
+from backlogapiprocessmodule.utils.Config import Config
+from backlogapiprocessmodule.utils.Logger import Logger
+from backlogapiprocessmodule.utils.AppManager import AppManager
 from distutils.util import strtobool
 
 #print(sys.prefix)
