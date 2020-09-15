@@ -10,7 +10,8 @@ https://developer.nulab.com/ja/docs/backlog/
 
 - Python 3.7+
 - pybacklog
-- pip install python-dateutil
+- pipenv install python-dateutil
+- pipenv install --dev twine
 
 ## Install package
 
@@ -32,3 +33,13 @@ backlogapiprocessing.run(ConfigFilePath, LoggingConfigFilePath)
 ## For Develoiper
 
 When you need to upload this package, see package_release.md
+
+
+### Migrate requirements.txt to Pipfile
+
+https://www.kabuku.co.jp/developers/python-pipenv-graph
+
+```
+pipenv install -r requirements.txt
+pipenv graph
+```

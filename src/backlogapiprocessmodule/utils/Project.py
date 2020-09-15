@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 
-from utils.Issue import Issue
+from backlogapiprocessmodule.utils.Issue import Issue
 from datetime import datetime, timedelta
 import copy
 

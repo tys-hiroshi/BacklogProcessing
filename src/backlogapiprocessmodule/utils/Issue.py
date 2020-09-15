@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 
 from datetime import datetime, timedelta
-import utils.Utils
+import backlogapiprocessmodule.utils.Utils
 
 class Issue(object):
     def __init__(self, issueKey, client, logger, beginDate, endDate):
