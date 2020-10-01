@@ -108,6 +108,7 @@ class Project(object):
         return self.client.do("GET", "projects/{project_id_or_key}/statuses", url_params={"project_id_or_key": projectId})
     
     def collectIssues(self, issueTypeNameList: list, beginDate, endDate, maxCount=-1):
+        self.logger.info(f"collectIssues: projectKey: {self.project['projectKey']}")
         issues = []  ## ProjectKeyに対するIssue
         for issueTypeName in issueTypeNameList:
             issueTypeId = self.getIssueTypeId(issueTypeName)
