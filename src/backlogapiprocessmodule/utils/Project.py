@@ -113,7 +113,7 @@ class Project(object):
         for issueTypeName in issueTypeNameList:
             issueTypeId = self.getIssueTypeId(issueTypeName)
             if not issueTypeId: # 指定されたissue typeがこのprojectに存在しない
-                return
+                continue
 
             createdIssueKeys = self.getIssueKeys(issueTypeId, beginDate, endDate, 'created', maxCount)
             updatedIssueKeys = self.getIssueKeys(issueTypeId, beginDate, endDate, 'updated', maxCount)
@@ -129,7 +129,8 @@ class Project(object):
 
     def getSummaryRecord(self, maxComments):
         if self.issues is None:
-            raise Exception('issues have not been collected yet, call collectIssues() first')
+            ## NOTE: exception だったが更新されないすべてのProjectで課題が一件も更新されないことはあるのでログに修正
+            self.logger.error('issues have not been collected yet, call collectIssues() first')
 
         hours = 0.0
         for issue in self.issues:
@@ -140,7 +141,8 @@ class Project(object):
 
     def getDetailRecords(self, maxComments):
         if self.issues is None:
-            raise Exception('issues have not been collected yet, call collectIssues() first')
+            ## NOTE: exception だったが更新されないすべてのProjectで課題が一件も更新されないことはあるのでログに修正
+            self.logger.error('issues have not been collected yet, call collectIssues() first')
 
         records = []
         for issue in self.issues:
