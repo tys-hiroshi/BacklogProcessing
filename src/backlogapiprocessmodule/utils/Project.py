@@ -12,6 +12,7 @@ class Project(object):
         self.project = None
         projects = client.projects()
         for project in projects:
+            print(f"projectKey: {projectKey}")
             if project['projectKey'] == projectKey:
                 self.project = project
                 break
