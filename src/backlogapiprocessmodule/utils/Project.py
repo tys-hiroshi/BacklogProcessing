@@ -106,22 +106,23 @@ class Project(object):
         #URL: /api/v2/projects/:projectIdOrKey/statusesreturn self.do
         return self.client.do("GET", "projects/{project_id_or_key}/statuses", url_params={"project_id_or_key": projectId})
     
-    def collectIssues(self, issueTypeName, beginDate, endDate, maxCount=-1):
-        issueTypeId = self.getIssueTypeId(issueTypeName)
-        if not issueTypeId: # 指定されたissue typeがこのprojectに存在しない
-            return
+    def collectIssues(self, issueTypeNameList: list, beginDate, endDate, maxCount=-1):
+        issues = []  ## ProjectKeyに対するIssue
+        for issueTypeName in issueTypeNameList:
+            issueTypeId = self.getIssueTypeId(issueTypeName)
+            if not issueTypeId: # 指定されたissue typeがこのprojectに存在しない
+                return
 
-        createdIssueKeys = self.getIssueKeys(issueTypeId, beginDate, endDate, 'created', maxCount)
-        updatedIssueKeys = self.getIssueKeys(issueTypeId, beginDate, endDate, 'updated', maxCount)
-        self.logger.info(f'----------------------- len(createdIssueKeys): {len(createdIssueKeys)}, len(updatedIssueKeys): {len(updatedIssueKeys)}')
-        issueKeys = createdIssueKeys + updatedIssueKeys
-        issueKeys = list(set(issueKeys))
-        issueKeys.sort()
-        self.logger.info(f'----------------------- len(issueKeys): {len(issueKeys)}')
+            createdIssueKeys = self.getIssueKeys(issueTypeId, beginDate, endDate, 'created', maxCount)
+            updatedIssueKeys = self.getIssueKeys(issueTypeId, beginDate, endDate, 'updated', maxCount)
+            self.logger.info(f'----------------------- len(createdIssueKeys): {len(createdIssueKeys)}, len(updatedIssueKeys): {len(updatedIssueKeys)}')
+            issueKeys = createdIssueKeys + updatedIssueKeys
+            issueKeys = list(set(issueKeys))
+            issueKeys.sort()
+            self.logger.info(f'----------------------- len(issueKeys): {len(issueKeys)}')
 
-        issues = []
-        for issueKey in issueKeys:
-            issues += [Issue(issueKey, self.client, self.logger, beginDate, endDate)]
+            for issueKey in issueKeys:
+                issues += [Issue(issueKey, self.client, self.logger, beginDate, endDate)]
         self.issues = issues
 
     def getSummaryRecord(self, maxComments):
