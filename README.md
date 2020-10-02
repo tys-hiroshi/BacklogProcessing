@@ -30,7 +30,7 @@ backlogapiprocessing.run(ConfigFilePath, LoggingConfigFilePath)
 ```
 
 
-## For Develoiper
+## For Developer
 
 When you need to upload this package, see package_release.md
 
