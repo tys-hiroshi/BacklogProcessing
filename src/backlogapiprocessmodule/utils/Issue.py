@@ -2,7 +2,7 @@
 # -*- coding:utf-8 -*-
 
 from datetime import datetime, timedelta
-import utils.Utils
+from backlogapiprocessmodule.utils.time_utils import TimeUtils
 
 class Issue(object):
     def __init__(self, issueKey, client, logger, beginDate, endDate):
@@ -43,7 +43,7 @@ class Issue(object):
         issueComments = self.client.issue_comments(self.issueKey, params)
 
         issue = self.client.issue(self.issueKey)
-        created = utils.Utils.utc(issue['created'])
+        created = TimeUtils.utc(issue['created'])
         created = datetime.strptime(created, '%Y-%m-%dT%H:%M:%S%z')
         created += timedelta(hours=9) # JSTに変換する
         created_issue_actualHours = 0.0  # actual hours of created issue
@@ -56,7 +56,7 @@ class Issue(object):
         is_add_actual_hours = False  ## when you update actual hours in comments, it's true
         self.logger.debug(f'len(issueComments): {len(issueComments)}')
         for issueComment in issueComments:
-            updated = utils.Utils.utc(issueComment['updated'])
+            updated = TimeUtils.utc(issueComment['updated'])
             updated = datetime.strptime(updated, '%Y-%m-%dT%H:%M:%S%z')
             updated += timedelta(hours=9) # JSTに変換する
             self.logger.debug(f'updated: {updated}')
@@ -74,7 +74,8 @@ class Issue(object):
                 newValue = 0.0 if newValue is None else float(newValue)
                 originalValue = 0.0 if originalValue is None or originalValue is '' else float(originalValue)
                 #NOTE: 新規課題追加時とコメントで実績工数入力時にカウントできていない
-                hours = newValue - originalValue
+                #NOTE: Actual Hours に1といれたあとで空に変更した場合、-1になってしまう問題を修正
+                hours = 0.0 if newValue - originalValue <= 0 else newValue - originalValue
 
                 self.logger.debug(f'hours: {hours}')
                 actualHours += hours

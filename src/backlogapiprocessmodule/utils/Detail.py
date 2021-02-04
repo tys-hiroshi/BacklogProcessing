@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 
-from utils.WikiBase import WikiBase
+from backlogapiprocessmodule.utils.WikiBase import WikiBase
 
 '''
 明細ページの種: 一番最初に手書きで用意しておくべきもの

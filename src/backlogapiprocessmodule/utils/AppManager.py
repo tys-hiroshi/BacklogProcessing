@@ -2,9 +2,9 @@
 # -*- coding:utf-8 -*-
 
 from pybacklog import BacklogClient
-from utils.Project import Project
-from utils.Summary import Summary
-from utils.Detail import Detail
+from backlogapiprocessmodule.utils.Project import Project
+from backlogapiprocessmodule.utils.Summary import Summary
+from backlogapiprocessmodule.utils.Detail import Detail
 
 class AppManager(object):
     ''' このアプリケーションのクラス
@@ -16,9 +16,9 @@ class AppManager(object):
         for projectKey in config['PROCESSING_PROJECT_KEY']:
             self.projects.append(Project(projectKey, self.client, logger))
 
-    def collectIssues(self, issueTypeName, beginDate, endDate, maxCount):
+    def collectIssues(self, issueTypeNameList: list, beginDate, endDate, maxCount):
         for project in self.projects:
-            project.collectIssues(issueTypeName, beginDate, endDate, maxCount)
+            project.collectIssues(issueTypeNameList, beginDate, endDate, maxCount)
 
     def reportSummary(self, wikiId, period, maxComments, isUpdateWiki = False):
         summary = Summary(wikiId, self.client, self.logger)

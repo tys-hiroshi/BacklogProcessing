@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding:utf-8 -*-
 
-from utils.Issue import Issue
+from backlogapiprocessmodule.utils.Issue import Issue
 from datetime import datetime, timedelta
 import copy
 
@@ -12,6 +12,7 @@ class Project(object):
         self.project = None
         projects = client.projects()
         for project in projects:
+            print(f"projectKey: {projectKey}")
             if project['projectKey'] == projectKey:
                 self.project = project
                 break
@@ -72,7 +73,7 @@ class Project(object):
             self.logger.info(f"sinceDate: {sinceDate}; len(issues): {len(issues)}")
             if len(issues) == maxCount:
                 self.logger.info(f"!!!!!WARNING!!!!! len(issues): {maxCount}; start get issues per statusId.")
-                statues = self.getProjectIssues(self.project['id'])
+                statues = self.getProjectStatuses(self.project['id'])
                 # add status condition
                 for status in statues:
                     self.logger.info(f"!!!!!WARNING!!!!! status name: {status['name']}")
@@ -99,30 +100,37 @@ class Project(object):
             issueKeys += [issue['issueKey']]
         return issueKeys
 
-    def getProjectIssues(self, projectId):
-        return self.client.project_statuses(projectId)
+    def getProjectStatuses(self, projectId):
+        ## NOTE: 本当は pybacklog を使いたいが PullReuqestしたが Mergeされないので、自分でリクエストする
+        ## NOTE: 本当は これを使いたい。 return self.client.project_statuses(project_id_or_key)
+        #メソッド: GET 
+        #URL: /api/v2/projects/:projectIdOrKey/statusesreturn self.do
+        return self.client.do("GET", "projects/{project_id_or_key}/statuses", url_params={"project_id_or_key": projectId})
     
-    def collectIssues(self, issueTypeName, beginDate, endDate, maxCount=-1):
-        issueTypeId = self.getIssueTypeId(issueTypeName)
-        if not issueTypeId: # 指定されたissue typeがこのprojectに存在しない
-            return
+    def collectIssues(self, issueTypeNameList: list, beginDate, endDate, maxCount=-1):
+        self.logger.info(f"collectIssues: projectKey: {self.project['projectKey']}")
+        issues = []  ## ProjectKeyに対するIssue
+        for issueTypeName in issueTypeNameList:
+            issueTypeId = self.getIssueTypeId(issueTypeName)
+            if not issueTypeId: # 指定されたissue typeがこのprojectに存在しない
+                continue
 
-        createdIssueKeys = self.getIssueKeys(issueTypeId, beginDate, endDate, 'created', maxCount)
-        updatedIssueKeys = self.getIssueKeys(issueTypeId, beginDate, endDate, 'updated', maxCount)
-        self.logger.info(f'----------------------- len(createdIssueKeys): {len(createdIssueKeys)}, len(updatedIssueKeys): {len(updatedIssueKeys)}')
-        issueKeys = createdIssueKeys + updatedIssueKeys
-        issueKeys = list(set(issueKeys))
-        issueKeys.sort()
-        self.logger.info(f'----------------------- len(issueKeys): {len(issueKeys)}')
+            createdIssueKeys = self.getIssueKeys(issueTypeId, beginDate, endDate, 'created', maxCount)
+            updatedIssueKeys = self.getIssueKeys(issueTypeId, beginDate, endDate, 'updated', maxCount)
+            self.logger.info(f'----------------------- len(createdIssueKeys): {len(createdIssueKeys)}, len(updatedIssueKeys): {len(updatedIssueKeys)}')
+            issueKeys = createdIssueKeys + updatedIssueKeys
+            issueKeys = list(set(issueKeys))
+            issueKeys.sort()
+            self.logger.info(f'----------------------- len(issueKeys): {len(issueKeys)}')
 
-        issues = []
-        for issueKey in issueKeys:
-            issues += [Issue(issueKey, self.client, self.logger, beginDate, endDate)]
+            for issueKey in issueKeys:
+                issues += [Issue(issueKey, self.client, self.logger, beginDate, endDate)]
         self.issues = issues
 
     def getSummaryRecord(self, maxComments):
         if self.issues is None:
-            raise Exception('issues have not been collected yet, call collectIssues() first')
+            ## NOTE: exception だったが更新されないすべてのProjectで課題が一件も更新されないことはあるのでログに修正
+            self.logger.error('issues have not been collected yet, call collectIssues() first')
 
         hours = 0.0
         for issue in self.issues:
@@ -133,7 +141,8 @@ class Project(object):
 
     def getDetailRecords(self, maxComments):
         if self.issues is None:
-            raise Exception('issues have not been collected yet, call collectIssues() first')
+            ## NOTE: exception だったが更新されないすべてのProjectで課題が一件も更新されないことはあるのでログに修正
+            self.logger.error('issues have not been collected yet, call collectIssues() first')
 
         records = []
         for issue in self.issues:
