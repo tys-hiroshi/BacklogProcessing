@@ -3,6 +3,7 @@
 
 from backlogapiprocessmodule.utils.Issue import Issue
 from datetime import datetime, timedelta
+from pytz import timezone
 import copy
 
 class Project(object):
@@ -57,8 +58,11 @@ class Project(object):
         beginDate = datetime.strptime(beginDateStr, '%Y-%m-%d')   
         endDate = datetime.strptime(endDateStr, '%Y-%m-%d')
 
-        issueKeys = []    
-        for day in range(1, endDate.day):  ##TODO: 
+        datetime_now = datetime.now(timezone('Asia/Tokyo'))  ## TODO: UTC or 'Asia/Tokyo'
+        until_request_day = endDate.day if(datetime_now.day > 25) else datetime_now.day
+        issueKeys = []
+        for day in range(1, until_request_day):  ##NOTE: api request for until_request_day. endDate.day is waste request.
+            self.logger.info(f"request day: {day}")
             sinceDate = datetime(beginDate.year, beginDate.month, day)
             # delta = timedelta(days=1)
             # untilDate = sinceDate + delta
