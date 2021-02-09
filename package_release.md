@@ -21,6 +21,12 @@ python setup.py sdist bdist_wheel
 twine upload dist/*
 ``` -->
 
+modify ```version``` parameter in setup.cfg.
+
+```
+version = 
+```
+
 ```
 pipenv shell
 pipenv install --dev twine
