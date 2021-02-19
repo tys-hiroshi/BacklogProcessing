@@ -2,7 +2,7 @@ name: Upload pypi package release
 
 on: 
   release:
-    types: [created]
+    types: [created,push]
 
 jobs:
   deploy:
