@@ -1,10 +1,16 @@
 # ref https://github.com/oke-aditya/image_similarity/blob/9ee94f0509d590178b2fb8f547b111a8cba6ad69/.github/workflows/pypi-release.yml
 name: Upload pypi package release
 
+# https://help.github.com/en/actions/reference/events-that-trigger-workflows
 on:
+  # Trigger the workflow on push or pull request,
+  # but only for the master branch
   push:
     branches:
       - master
+  release:
+    types:
+      - created
 
 jobs:
   deploy:
@@ -30,6 +36,7 @@ jobs:
         python3 setup.py sdist --formats=zip
         #twine upload dist/*
     - name: Publish a Python distribution to PyPI
+      if: startsWith(github.event.ref, 'refs/tags') || github.event_name == 'release'
       uses: pypa/gh-action-pypi-publish@master
       with:
         user: __token__
