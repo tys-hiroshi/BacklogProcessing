@@ -23,7 +23,7 @@ jobs:
         # pip install setuptools wheel twine
         # pipenv install --dev twine
         # pipenv shell
-        python setup.py sdist bdist_wheel
+        # python setup.py sdist bdist_wheel
     - name: Build
       run: |
         python3 setup.py sdist --formats=zip
