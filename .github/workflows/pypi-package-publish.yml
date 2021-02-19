@@ -1,8 +1,9 @@
 name: Upload pypi package release
 
-on: 
-  release:
-    types: [created,push]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   deploy:
