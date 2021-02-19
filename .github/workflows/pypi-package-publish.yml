@@ -1,0 +1,43 @@
+name: Upload pypi package release
+
+on: 
+  release:
+    types: [created]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        # python -m pip install --upgrade pip
+        # pip install setuptools wheel twine
+        pipenv shell
+        pipenv install --dev twine
+    - name: Build and Publish
+    env:
+      TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+      TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+    run: |
+      #python setup.py sdist bdist_wheel
+      python3 setup.py sdist --formats=zip
+      twine upload dist/*
+
+# NOTE : Util now
+# modify ```version``` parameter in setup.cfg.
+
+# ```
+# version = 
+# ```
+
+# ```
+# pipenv shell
+# pipenv install --dev twine
+# python3 setup.py sdist --formats=zip
+# twine upload dist/*
+# ```
