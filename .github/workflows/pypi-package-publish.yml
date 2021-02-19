@@ -23,10 +23,10 @@ jobs:
     env:
       TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
       TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-    run: |
-      #python setup.py sdist bdist_wheel
-      python3 setup.py sdist --formats=zip
-      twine upload dist/*
+      run: |
+        #python setup.py sdist bdist_wheel
+        python3 setup.py sdist --formats=zip
+        twine upload dist/*
 
 # NOTE : Util now
 # modify ```version``` parameter in setup.cfg.
